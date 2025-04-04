@@ -106,3 +106,23 @@ def test_add_choice_after_removal_all():
     question.remove_all_choices()
     new_choice = question.add_choice("New Choice", True)
     assert new_choice.id == 1
+
+@pytest.fixture
+def multi_choice_question():
+    """Cria uma questão com múltiplas escolhas para reutilização nos testes."""
+    question = Question(title="Fixture Question", max_selections=2)
+    question.add_choice("Option A", False)
+    question.add_choice("Option B", True)
+    question.add_choice("Option C", True)
+    return question
+
+def test_fixture_select_correct(multi_choice_question):
+    correct_choice_id = multi_choice_question.choices[1].id
+    selected = multi_choice_question.select_choices([correct_choice_id])
+    assert selected == [correct_choice_id]
+
+def test_fixture_remove_choice(multi_choice_question):
+    initial_count = len(multi_choice_question.choices)
+    choice_to_remove = multi_choice_question.choices[0]
+    multi_choice_question.remove_choice_by_id(choice_to_remove.id)
+    assert len(multi_choice_question.choices) == initial_count - 1
